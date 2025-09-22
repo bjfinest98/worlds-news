@@ -1,6 +1,6 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Article,category
-from .forms import commentForm
+from django.shortcuts import render, get_object_or_404,redirect
+from .models import Article,Category
+from .forms import CommentForm
 from django.contrib.auth.decorators import login_required
 
 def Home (request):
@@ -16,24 +16,29 @@ def Home (request):
     return render(request, 'home.html', {'stories': stories, 'categories': categories, 'sport_news': sport_news, 'banner':banner, 'all_news':all_news, 'slider_news': slider_news, 'carousel_news':carousel_news, 'grid_news':grid_news, 'grid':grid})
 
 
-def article_details (request, slug):
+def Article_details (request, slug):
     article = get_object_or_404(Article, slug=slug, is_published=True )
+    related_stories =(
+        Article.objects.filter(category=article.category)
+        .exclude(slug=slug)
+        .order_by('-pub_date')[:5]
+    )
     categories = Category.objects.all()
     comments = article.comments.order_by('-pub_date')
     comment_form = CommentForm()
-    return render(request, 'article_details.html',{'article':article, 'categories':categories,'comments':comments,'comment_form':comment_form})
+    return render(request, 'article_details.html',{'article':article, 'categories':categories,'comments':comments,'comment_form':comment_form,'related_stories':related_stories})
 
 
     
 
-def category (request, slug):
+def category_view (request, slug):
     category = get_object_or_404(Category, slug=slug)
     articles = Article.objects.filter(category=category).order_by('-pub_date')
     categories = Category.objects.all()
     return render(request, 'category.html', {'category':category, 'articles':articles, 'categories':categories})
 
 
-def post_comment(request, slug):
+def Post_comment(request, slug):
     article = get_object_or_404(Article, slug=slug, is_published=True)
     if request.method == 'POST':
         form = CommentForm(request.POST)
