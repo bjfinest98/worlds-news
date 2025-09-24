@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
+# DEBUG = True 
 
 # Render sets ALLOWED_HOSTS automatically, use wildcard for now
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")

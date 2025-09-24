@@ -2,88 +2,63 @@
 {% load static %}
 
 {% block content %}
-<div class="container my-4">
-  <div class="row g-4">
-    
-    <!-- Main Article -->
-    <div class="col-lg-8 col-md-12">
-      <h1 class="mb-3">{{ article.title }}</h1>
-      <p class="text-muted">{{ article.pub_date }}</p>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8">
+            <h1>{{ article.title }}</h1>
+            <p>{{ article.pub_date }}</p>
 
-      {% if article.image %}
-        <img src="{{ article.image.url }}" alt="{{ article.title }}" class="img-fluid rounded mb-3">
-      {% endif %}
+            {% if article.image %}
+                <img class="img-fluid mb-3" src="{{ article.image.url }}" alt="{{ article.title }}">
+            {% endif %}
 
-      <p class="fw-bold">By {{ article.author }}</p>
-      <p>{{ article.content|linebreaks }}</p>
+            <p>By {{ article.author }}</p>
+            <p>{{ article.content|linebreaks }}</p>
 
-      <!-- Comments Section -->
-      <div class="mt-5">
-        <h3>Comments</h3>
-        <div class="list-group">
-          {% if comments %}
-            {% for comment in comments %}
-              <div class="list-group-item mb-2">
-                <p>
-                  <strong>{{ comment.author.username|default:"Guest" }}</strong> said:
-                </p>
-                <p>{{ comment.content }}</p>
-                <small class="text-danger"><em>{{ comment.pub_date|timesince }} ago</em></small>
-                {% if not comment.is_approved %}
-                  <p class="text-muted"><em>(Awaiting moderation)</em></p>
+            <h3>Comments</h3>
+            <div>
+                {% if comments %}
+                    {% for comment in comments %}
+                        <section class="mb-3">
+                            <p><strong>{{ comment.author.username|default:"Guest" }}</strong> said:</p>
+                            <p>{{ comment.content }}</p>
+                            <small class="text-danger"><em>{{ comment.pub_date|timesince }} ago</em></small>
+                            {% if not comment.is_approved %}
+                                <p><em>(Awaiting moderation)</em></p>
+                            {% endif %}
+                        </section>
+                    {% endfor %}
+                {% else %}
+                    <p>No comment yet. Be the first to comment!</p>
                 {% endif %}
-              </div>
-            {% endfor %}
-          {% else %}
-            <p>No comment yet. Be the first to comment!</p>
-          {% endif %}
-        </div>
-      </div>
+            </div>
+            <hr>
 
-      <hr>
-
-      <!-- Comment Form -->
-      <h3 class="mt-4">Add a Comment</h3>
-      <form method="post" action="{% url 'post_comment' article.slug %}" class="mb-4">
-        {% csrf_token %}
-        <div class="mb-3">
-          {{ comment_form.as_p }}
+            <h3>Add a Comment</h3>
+            <form method="post" action="{% url 'post_comment' article.slug %}" class="mb-4">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary">Submit Comment</button>
-      </form>
+
+        <div class="col-12 col-md-4 mt-4 mt-md-0">
+            <div class="mb-4">
+                <img src="{% static 'image/gif.gif' %}" class="img-fluid" alt="">
+            </div>
+            <div id="calendar" class="mb-4"></div>
+            <div>
+                {% for story in related_stories %}
+                    <section class="mb-3">
+                        <p><small>{{ story.pub_date|timesince }} ago</small></p>
+                        <a href="{% url 'article_details' story.slug %}">
+                            <h4>{{ story.title|truncatewords:"9" }}</h4>
+                        </a>
+                        <hr>
+                    </section>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4 col-md-12">
-      <!-- Ad Banner -->
-      <div class="mb-4">
-        <img src="{% static 'image/gif.gif' %}" alt="ad banner" class="img-fluid rounded">
-      </div>
-
-      <!-- Calendar -->
-      <div id="calendar" class="mb-4"></div>
-
-      <!-- Related Stories -->
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Related Stories</h5>
-        </div>
-        <div class="card-body">
-          {% for story in related_stories %}
-            <section class="mb-3">
-              <p class="small text-muted">{{ story.pub_date|timesince }} ago</p>
-              <a href="{% url 'article_details' story.slug %}" class="text-decoration-none">
-                <h6>{{ story.title|truncatewords:"9" }}</h6>
-              </a>
-              {% if not forloop.last %}
-                <hr>
-              {% endif %}
-            </section>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-
-  </div>
 </div>
 {% endblock %}

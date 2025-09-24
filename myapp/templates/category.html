@@ -2,41 +2,32 @@
 {% load static %}
 
 {% block content %}
-<div class="container my-4">
-  <div class="row g-4">
-    
-    <!-- Main Articles -->
-    <div class="col-lg-8 col-md-12">
-      {% for article in articles %}
-        <article class="card mb-4 shadow-sm">
-          {% if article.image %}
-            <a href="{% url 'article_details' article.slug %}">
-              <img src="{{ article.image.url }}" alt="{{ article.title }}" class="card-img-top img-fluid rounded">
-            </a>
-          {% endif %}
-          <div class="card-body">
-            <h3 class="card-title h5">
-              <a href="{% url 'article_details' article.slug %}" class="text-decoration-none">
-                {{ article.title }}
-              </a>
-            </h3>
-            <p class="card-text">{{ article.excerpt|truncatewords:25 }}</p>
-            <small class="text-muted">Published: {{ article.pub_date }}</small>
-          </div>
-        </article>
-      {% empty %}
-        <p>No articles in this category yet.</p>
-      {% endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8">
+            {% for article in articles %}
+                <article class="mb-4">
+                    {% if article.image %}
+                        <a href="{% url 'article_details' article.slug %}">
+                            <img class="img-fluid w-100 mb-2" src="{{ article.image.url }}" alt="{{ article.title }}">
+                        </a>
+                    {% endif %}
+                    <h3>
+                        <a href="{% url 'article_details' article.slug %}">
+                            {{ article.title }}
+                        </a>
+                    </h3>
+                    <p>{{ article.excerpt|truncatewords:25 }}</p>
+                    <small>Published: {{ article.pub_date }}</small>
+                </article>
+                <hr>
+            {% empty %}
+                <p>No articles in this category yet.</p>
+            {% endfor %}
+        </div>
+        <div class="col-12 col-md-4 mt-4 mt-md-0">
+            <div id="calendar"></div>
+        </div>
     </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4 col-md-12">
-      <div class="card p-3 shadow-sm">
-        <h5 class="card-title">Calendar</h5>
-        <div id="calendar"></div>
-      </div>
-    </div>
-
-  </div>
 </div>
 {% endblock %}
